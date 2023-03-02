@@ -44,24 +44,16 @@ fn scan_dir_recursive(path: &path::Path) -> io::Result<HashMap<String, Vec<PathB
 }
 
 fn main() -> io::Result<()> {
-    // let mut file_list = HashMap::new();
-
     for arg in env::args().skip(1) {
-        let map = scan_dir_recursive(path::Path::new(&arg))?;
-
-        // find duplicate files by Sha256
-        let duplicates: Vec<&Vec<PathBuf>> = map.iter()
-           .filter(|(_, v)| v.len() > 1)
-           .map(|(_, v)| v)
-           .collect();
-
-        // print out duplicate list
-        duplicates.iter().for_each(|v| {
-            println!("{}:", v.len());
-            for ele in v.iter() {
-                println!("\t{}", ele.to_str().unwrap_or(""));
-            }
-        });
+        scan_dir_recursive(path::Path::new(&arg))?
+            .iter()
+            .filter(|(_, v)| v.len() > 1)
+            .for_each(|(_, v)| {
+                println!("{}:", v.len());
+                for ele in v.iter() {
+                    println!("\t{}", ele.to_str().unwrap_or(""));
+                }
+            });
     }
 
     Ok(())
