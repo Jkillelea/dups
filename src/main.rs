@@ -14,13 +14,16 @@ fn scan_dir_recursive(path: &path::Path) -> io::Result<HashMap<String, Vec<PathB
 
     if let Ok(mut readdir) = fs::read_dir(path) {
         while let Some(Ok(entry)) = readdir.next() {
+
             if let Ok(meta) = entry.metadata() {
+
                 if meta.is_file() {
+                    // Compute sha256 of file
                     let mut f = BufReader::new(fs::File::open(entry.path())?);
                     let mut buffer = Vec::with_capacity(meta.len() as usize);
                     f.read_to_end(&mut buffer)?;
 
-                    let sha = sha256::digest(&*buffer);
+                    let sha = sha256::digest(buffer.as_slice());
 
                     // add to map
                     if let Some(list) = map.get_mut(&sha) {
